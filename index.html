@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AIAG &amp; VDA Reference-Aligned FMEA</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Reference-aligned working form</p>
+        <h1>Failure Modes &amp; Effects Analysis</h1>
+        <p class="subhead">
+          A browser-based FMEA worksheet organized around the harmonized AIAG &amp; VDA approach.
+        </p>
+      </div>
+      <div class="header-actions">
+        <button id="exportJson" type="button" title="Download project data as JSON">Export JSON</button>
+        <button id="exportCsv" type="button" title="Download worksheet as CSV">Export CSV</button>
+        <label class="import-control" title="Import a JSON file exported from this app">
+          Import JSON
+          <input id="importJson" type="file" accept="application/json" />
+        </label>
+      </div>
+    </header>
+
+    <main>
+      <section class="project-panel" aria-labelledby="project-title">
+        <div class="panel-title">
+          <h2 id="project-title">Project Details</h2>
+          <span id="saveState" class="save-state">Saved locally</span>
+        </div>
+        <div class="project-grid">
+          <label>
+            FMEA type
+            <select id="fmeaType">
+              <option>Design FMEA</option>
+              <option>Process FMEA</option>
+              <option>Supplemental FMEA</option>
+            </select>
+          </label>
+          <label>
+            Product / process
+            <input id="productProcess" placeholder="e.g., Brake pedal assembly" />
+          </label>
+          <label>
+            System / process owner
+            <input id="owner" placeholder="Name or team" />
+          </label>
+          <label>
+            Revision
+            <input id="revision" placeholder="A" />
+          </label>
+          <label>
+            Prepared by
+            <input id="preparedBy" placeholder="Name" />
+          </label>
+          <label>
+            Review date
+            <input id="reviewDate" type="date" />
+          </label>
+        </div>
+      </section>
+
+      <section class="method-band" aria-labelledby="method-title">
+        <div>
+          <h2 id="method-title">Seven-Step Structure</h2>
+          <p>
+            This tool mirrors the public seven-step structure associated with the AIAG &amp; VDA FMEA
+            handbook: planning, structure analysis, function analysis, failure analysis, risk analysis,
+            optimization, and results documentation.
+          </p>
+        </div>
+        <ol class="steps" aria-label="FMEA seven-step structure">
+          <li>Planning</li>
+          <li>Structure</li>
+          <li>Function</li>
+          <li>Failure</li>
+          <li>Risk</li>
+          <li>Optimization</li>
+          <li>Results</li>
+        </ol>
+      </section>
+
+      <section class="toolbar" aria-label="Worksheet controls">
+        <div class="summary">
+          <div>
+            <span id="rowCount">0</span>
+            <small>Rows</small>
+          </div>
+          <div>
+            <span id="highPriorityCount">0</span>
+            <small>High AP</small>
+          </div>
+          <div>
+            <span id="openActionCount">0</span>
+            <small>Open actions</small>
+          </div>
+        </div>
+        <div class="toolbar-actions">
+          <input id="searchRows" placeholder="Search rows" aria-label="Search FMEA rows" />
+          <button id="addRow" type="button">Add Row</button>
+          <button id="clearDemo" type="button">Clear Demo Data</button>
+        </div>
+      </section>
+
+      <section class="worksheet-wrap" aria-labelledby="worksheet-title">
+        <h2 id="worksheet-title" class="sr-only">FMEA Worksheet</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Item / Step</th>
+                <th>Function</th>
+                <th>Failure Mode</th>
+                <th>Effect</th>
+                <th>Cause</th>
+                <th>Prevention Control</th>
+                <th>Detection Control</th>
+                <th>S</th>
+                <th>O</th>
+                <th>D</th>
+                <th>AP</th>
+                <th>Recommended Action</th>
+                <th>Owner</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="fmeaRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="notice" aria-label="Reference notice">
+        <strong>Reference note:</strong>
+        This app is a working aid based on publicly described AIAG &amp; VDA FMEA concepts and does not
+        reproduce the handbook. Confirm scoring tables, action priority decisions, and customer-specific
+        requirements against your licensed AIAG &amp; VDA FMEA handbook and applicable OEM requirements.
+      </section>
+    </main>
+
+    <template id="rowTemplate">
+      <tr>
+        <td><textarea data-field="item" aria-label="Item or process step"></textarea></td>
+        <td><textarea data-field="function" aria-label="Function"></textarea></td>
+        <td><textarea data-field="failureMode" aria-label="Failure mode"></textarea></td>
+        <td><textarea data-field="effect" aria-label="Effect"></textarea></td>
+        <td><textarea data-field="cause" aria-label="Cause"></textarea></td>
+        <td><textarea data-field="prevention" aria-label="Prevention control"></textarea></td>
+        <td><textarea data-field="detection" aria-label="Detection control"></textarea></td>
+        <td><input data-field="severity" type="number" min="1" max="10" aria-label="Severity" /></td>
+        <td><input data-field="occurrence" type="number" min="1" max="10" aria-label="Occurrence" /></td>
+        <td><input data-field="detectionRank" type="number" min="1" max="10" aria-label="Detection" /></td>
+        <td><span class="ap-pill">M</span></td>
+        <td><textarea data-field="action" aria-label="Recommended action"></textarea></td>
+        <td><input data-field="actionOwner" aria-label="Action owner" /></td>
+        <td><input data-field="dueDate" type="date" aria-label="Due date" /></td>
+        <td>
+          <select data-field="status" aria-label="Status">
+            <option>Open</option>
+            <option>In progress</option>
+            <option>Complete</option>
+            <option>Accepted risk</option>
+          </select>
+        </td>
+        <td><button class="delete-row" type="button" title="Delete row">Delete</button></td>
+      </tr>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
